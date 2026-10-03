@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Email Collector</title>
+</head>
+<body>
+
+    <h2>Join our Newsletter</h2>
+    <form id="emailForm">
+        <input type="email" id="userEmail" placeholder="Enter your email" required>
+        <button type="submit">Submit</button>
+    </form>
+    
+    <p id="responseMessage"></p>
+
+    <script>
+        document.getElementById('emailForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            
+            const emailInput = document.getElementById('userEmail').value;
+            const messageElement = document.getElementById('responseMessage');
+            
+            // ⚠️ MAKE SURE TO REPLACE 'yourusername' WITH YOUR ACTUAL PYTHONANYWHERE USERNAME
+
+const backendUrl = 'https://ezeepsk.pythonanywhere.com/';
+
+            try {
+                // Switching payload format to URL encoded text to bypass strict CORS blocks
+                const formData = new URLSearchParams();
+                formData.append('email', emailInput);
+
+                const response = await fetch(backendUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    messageElement.innerText = result.message;
+                    messageElement.style.color = "green";
+                    document.getElementById('emailForm').reset();
+                } else {
+                    messageElement.innerText = "Error: " + result.message;
+                    messageElement.style.color = "red";
+                }
+            } catch (error) {
+                console.error("Connection failed:", error);
+                messageElement.innerText = "Could not connect to the server.";
+                messageElement.style.color = "red";
+            }
+        });
+    </script>
+</body>
+</html>
